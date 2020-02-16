@@ -11,5 +11,5 @@ To search for anime by screenshots, you need to install the library [TraceMoe](h
 
 ```
 pip install https://github.com/Ethosa/tracemoe/archive/master.zip
-phyton anime_search.py.py
+phyton anime_search.py
 ```
