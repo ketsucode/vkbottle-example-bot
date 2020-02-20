@@ -3,7 +3,7 @@ Example bot on [VKBottle](https://github.com/timoniq/vkbottle) library
 
 ```
 pip install https://github.com/timoniq/vkbottle/archive/master.zip
-phyton bot.py
+python bot.py
 ```
  
 # [Anime search](anime_search.py)
@@ -11,5 +11,5 @@ To search for anime by screenshots, you need to install the library [TraceMoe](h
 
 ```
 pip install https://github.com/Ethosa/tracemoe/archive/master.zip
-phyton anime_search.py
+python anime_search.py
 ```
