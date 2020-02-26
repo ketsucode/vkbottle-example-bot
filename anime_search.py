@@ -18,7 +18,7 @@ async def wrapper(ans: Message):
         hoursdt = dto // 3600
         minutesdt = dto % 3600 // 60
         secondsdt = dto % 60
-	    await ans('Аниме:{} \nСерия: {}\nТаймкод: с {:02d}:{:02d}:{:02d}  по {:02d}:{:02d}:{:02d} \nТочность: {}%'.format(title,episode,))
+	    await ans('Аниме:{} \nСерия: {}\nТаймкод: с {:02d}:{:02d}:{:02d}  по {:02d}:{:02d}:{:02d} \nТочность: {}%'.format(titles,episodes,hoursdf,minutesdf,secondsdf,hoursdt,minutesdt,secondsdt,similaritys))
 	else:
 		await ans("Прикрепи картинку, чтобы я нашел откуда она")
 
