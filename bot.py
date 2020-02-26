@@ -92,11 +92,12 @@ async def ban(ans: Message):
             while await check(ans,id=random_member)
             random_member = random.choice(list(member_ids))
             else:
-              await ans(f"@id{random_member}(Мда)")
-              await ans(sticker_id=13607)
-              await bot.api.messages.removeChatUser(chat_id=ans.peer_id-2000000000, member_id=random_member)
+                await ans(f"@id{random_member}(Мда)")
+                await ans(sticker_id=13607)
+                await bot.api.messages.removeChatUser(chat_id=ans.peer_id-2000000000, member_id=random_member)
          else:
-        await ans("Ты не админ")
+             await ans("Ты не админ")
+
 
 
 
@@ -110,12 +111,13 @@ async def invite(ans: Message):
 async def join(event: GroupJoin):
 		await bot.api.messages.send(peer_id=event.user_id, message="♂Welcome to the club, buddy♂", attachment="photo-185367978_457239102", random_id=0)     #send message on group subscribe
 
-
-@bot.on.chat_message(IsAdmin(True), text = ['echo <text>', 'echo'], lower=True)
-async def echo(message, text = 'Сообщение не указано'):
-	member_ids = (item['member_id'] for item in (await bot.api.request('messages.getConversationMembers', {'peer_id' : message.peer_id}))['items'] if item['member_id'] > 0 and item['member_id'] != id)  #  @everyone
-	await message(f"{text}\n{''.join(f'[id{member_id}|.]' for member_id in member_ids)}")
-
+@bot.on.chat_message(text = ['echo <text>', 'echo'], lower=True)
+async def echo(ans, text = 'Сообщение не указано'):
+     if await check(ans,id=ans.from_id):
+          member_ids = (item['member_id'] for item in (await bot.api.request('messages.getConversationMembers', {'peer_id' : ans.peer_id}))['items'] if item['member_id'] > 0 and item['member_id'] != id)
+          await ans(f"{text}\n{''.join(f'[id{member_id}|.]' for member_id in member_ids)}",attachment=f'photo-185367978_457239114')
+     else:
+         await ans('Ты не админ')
 
 
 if __name__ == "__main__":
