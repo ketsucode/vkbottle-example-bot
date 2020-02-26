@@ -9,6 +9,18 @@ from vkbottle.types import GroupJoin
 
 bot = Bot("VK Group Token")
 
+
+
+async def check(ans: Message,id):
+    items = (await bot.api.messages.getConversationsById(peer_ids = ans.peer_id))['items']
+    if not items: return False
+    chat_settings = items[0]['chat_settings']
+    is_admin = id == chat_settings['owner_id'] or id in chat_settings['admin_ids']
+    return is_admin
+
+
+
+
 @bot.on.message_handler(text="My name is Van")
 async def wrapper(ans: Message):
     await ans("1 message")
@@ -51,39 +63,40 @@ async def wrapper(ans: Message):
 
 
 
-@bot.on.chat_message(lev=["кик","kick"])
-async def ban(ans: Message):
-    if ans.reply_message:
-        if await check(ans):
+@bot.on.chat_message(lev=["кик","kick","kick <domain>","кик <domain>"])
+async def ban(ans: Message,domain):
+    if await check(ans,id=ans.from_id):
+        if ans.reply_message:
             if ans.reply_message.from_id!=-185367978:
-                if await checkre(ans):
+                if await check(ans,id=ans.reply_message.from_id):
                     await ans("Я не могу исключить администратора беседы")
                 else:
-                    await ans("пока")
-                    await bot.api.messages.removeChatUser(chat_id=ans.peer_id-2000000000, member_id=ans.reply_message.from_id)       #kick sistem
+                    await ans("пока",sticker_id=13607)
+                    await bot.api.messages.removeChatUser(chat_id=ans.peer_id-2000000000, member_id=ans.reply_message.from_id)
             else:
                 await ans("Ты еблан?")
         else:
-            await ans("Ты не админ")
+            await ans(f"Перешли сообщение того, кого нужно исключить из беседы")
     else:
-        await ans("Перешли сообщение того, кого нужно исключить из беседы")
+        await ans("Ты не админ")
 
 
-async def check(message: Message):
-    items = (await bot.api.messages.getConversationsById(peer_ids = message.peer_id))['items']
-    if not items: return False
-    chat_settings = items[0]['chat_settings']
-    is_admin = message.from_id == chat_settings['owner_id'] or message.from_id in chat_settings['admin_ids']   #check admin
-    return is_admin
 
 
-async def checkre(message: Message):
-    items = (await bot.api.messages.getConversationsById(peer_ids = message.peer_id))['items']
-    if not items: return False
-    chat_settings = items[0]['chat_settings']
-    is_admin = message.reply_message.from_id == chat_settings['owner_id'] or message.reply_message.from_id in chat_settings['admin_ids']  # check admin in reply message
-    return is_admin
 
+@bot.on.chat_message(lev=["кикрандом","kickrandom","рулетка"])
+async def ban(ans: Message):
+    member_ids = (item['member_id'] for item in (await bot.api.request('messages.getConversationMembers', {'peer_id' : ans.peer_id}))['items'] if item['member_id'] > 0 and item['member_id'] != id)
+    random_member = random.choice(list(member_ids))
+        if await check(ans,id=ans.from_id):
+            while await check(ans,id=random_member)
+            random_member = random.choice(list(member_ids))
+            else:
+              await ans(f"@id{random_member}(Мда)")
+              await ans(sticker_id=13607)
+              await bot.api.messages.removeChatUser(chat_id=ans.peer_id-2000000000, member_id=random_member)
+         else:
+        await ans("Ты не админ")
 
 
 
