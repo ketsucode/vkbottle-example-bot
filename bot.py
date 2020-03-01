@@ -45,12 +45,17 @@ async def wrapper(ans: Message, text):
 
 
 
-@bot.on.chat_message(text="info", lower=True)
+@bot.on.chat_message(text="инфо",lower=True,command=True)
 async def wrapper(ans: Message):
     if ans.reply_message:
-    	await ans(f"Id чата: {ans.peer_id}\nId ответа: {ans.reply_message.from_id}\nId сообщения: {ans.conversation_message_id} или {ans.id}\nId пользователя: {ans.from_id}")  # chat info
+    	await ans(f"""Id чата: {ans.peer_id}
+        Id из ответа: {ans.reply_message.from_id}
+        Id сообщения: {ans.conversation_message_id} или {ans.id}
+        Id пользователя: {ans.from_id}""")
     else:
-        await ans(f"Id чата: {ans.peer_id}\nId сообщения: {ans.conversation_message_id} или {ans.id}\nId пользователя: {ans.from_id}")
+        await ans(f"""Id чата: {ans.peer_id}
+        Id сообщения: {ans.conversation_message_id} или {ans.id}
+        Id отправителя: {ans.from_id}""")
 
 
 
@@ -63,40 +68,26 @@ async def wrapper(ans: Message):
 
 
 
-@bot.on.chat_message(lev=["кик","kick","kick <domain>","кик <domain>"])
-async def ban(ans: Message,domain):
-    if await check(ans,id=ans.from_id):
-        if ans.reply_message:
-            if ans.reply_message.from_id!=-185367978:
-                if await check(ans,id=ans.reply_message.from_id):
-                    await ans("Я не могу исключить администратора беседы")
-                else:
-                    await ans("пока",sticker_id=13607)
-                    await bot.api.messages.removeChatUser(chat_id=ans.peer_id-2000000000, member_id=ans.reply_message.from_id)
-            else:
-                await ans("Ты еблан?")
-        else:
-            await ans(f"Перешли сообщение того, кого нужно исключить из беседы")
+
+
+
+@bot.on.chat_message(text=["кик", "kick", "kick <domain>", "кик <domain>"],lower=True,command=True)
+async def ban(ans: Message, domain=''):
+    if await getid(bot,domain):
+        user = await getid(bot,domain)
     else:
-        await ans("Ты не админ")
+        if not ans.reply_message:
+            return f"Напиши ид или ответь на сообщение того, кого нужно исключить из чата"
+        user = ans.reply_message.from_id
+    if not await check(ans,ans.from_id):
+        return "Ты не админ"
+    if user == -185367978: #bot id
+        return "Ты еблан?"
+    if await check(ans,user):
+        return "Я не могу исключить администратора беседы"
+    await ans("пока", sticker_id=13607)
+    await bot.api.messages.removeChatUser(chat_id=ans.peer_id - 2000000000, member_id=user)
 
-
-
-
-
-@bot.on.chat_message(lev=["кикрандом","kickrandom","рулетка"])
-async def ban(ans: Message):
-    member_ids = (item['member_id'] for item in (await bot.api.request('messages.getConversationMembers', {'peer_id' : ans.peer_id}))['items'] if item['member_id'] > 0 and item['member_id'] != id)
-    random_member = random.choice(list(member_ids))
-        if await check(ans,id=ans.from_id):
-            while await check(ans,id=random_member)
-            random_member = random.choice(list(member_ids))
-            else:
-                await ans(f"@id{random_member}(Мда)")
-                await ans(sticker_id=13607)
-                await bot.api.messages.removeChatUser(chat_id=ans.peer_id-2000000000, member_id=random_member)
-         else:
-             await ans("Ты не админ")
 
 
 
