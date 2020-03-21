@@ -1,5 +1,5 @@
 import typing
-from vkbottle import *
+from vkbottle import Bot, Message
 from vkbottle.rule import ChatActionRule
 from vkbottle.api import Api
 from vkbottle.keyboard import Keyboard, Text
@@ -7,7 +7,11 @@ from vkbottle.types import GroupJoin
 
 
 
+
+
 bot = Bot("VK Group Token")
+
+
 
 
 
@@ -21,12 +25,39 @@ async def check(ans: Message,id):
 
 
 
-@bot.on.message_handler(text="My name is Van")
+
+async def getid(bot, pattern: str) -> int:
+	if pattern.isdigit():
+		return int(pattern)
+	elif 'vk.com/' in pattern or 'http://vk.com/' in pattern or 'https://vk.com/' in pattern:
+		uid = (await bot.api.users.get(
+			user_ids=pattern.split('/')[-1]
+		))[0]
+		return uid['id']
+	elif '[id' in pattern:
+		uid = pattern.split("|")[0]
+		return int(uid.replace("[id", ""))
+
+
+
+
+
+@bot.on.chat_invite()
+async def wrapper(ans: Message):
+	await ans("Привет! \nДля полноценной работы бота необходимо выдать админку. \nСписок доступных команд можно узнать написав !help или !помощь.")
+
+
+
+
+
+@bot.on.message_handler(text="shue")
 async def wrapper(ans: Message):
     await ans("1 message")
     await ans("2 message")
     await ans("3 message")
     await ans("4 message", keyboard=keyboard_gen([[{'text': 'test'}]], one_time=True)) # test keyboard
+
+
 
 
 
@@ -41,6 +72,7 @@ async def wrapper(ans: Message):
 @bot.on.message_handler(text="text <text>", lower=True)
 async def wrapper(ans: Message, text):
     await ans("test {}".format(text))
+
 
 
 
@@ -60,6 +92,7 @@ async def wrapper(ans: Message):
 
 
 
+
 @bot.on.message_handler(text="who i'm", lower=True)
 async def wrapper(ans: Message):
     await ans(f'Who are @id{ans.from_id}(you)')
@@ -68,25 +101,22 @@ async def wrapper(ans: Message):
 
 
 
-
-
-
-@bot.on.chat_message(text=["кик", "kick", "kick <domain>", "кик <domain>"],lower=True,command=True)
+@bot.on.chat_message(lev=["!кик", "!kick", "!kick <domain>", "!кик <domain>"],lower=True)
 async def ban(ans: Message, domain=''):
-    if await getid(bot,domain):
-        user = await getid(bot,domain)
-    else:
-        if not ans.reply_message:
-            return f"Напиши ид или ответь на сообщение того, кого нужно исключить из чата"
-        user = ans.reply_message.from_id
-    if not await check(ans,ans.from_id):
-        return "Ты не админ"
-    if user == -185367978: #bot id
-        return "Ты еблан?"
-    if await check(ans,user):
-        return "Я не могу исключить администратора беседы"
-    await ans("пока", sticker_id=13607)
-    await bot.api.messages.removeChatUser(chat_id=ans.peer_id - 2000000000, member_id=user)
+	if await getid(bot,domain):
+		user = await getid(bot,domain)
+	else:
+		if not ans.reply_message:
+			return f"Напиши ид или ответь на сообщение того, кого нужно исключить из чата"
+		user = ans.reply_message.from_id
+	if not await check(ans,ans.from_id):
+		return "Ты не админ"
+	if user == -185367978:
+		return "Ты еблан?"
+	if await check(ans,user):
+		return "Я не могу исключить администратора беседы"
+	await ans("пока", sticker_id=13607)
+	await bot.api.messages.removeChatUser(chat_id=ans.peer_id - 2000000000, member_id=user)
 
 
 
@@ -98,9 +128,7 @@ async def invite(ans: Message):
 
 
 
-@bot.on.event.group_join()
-async def join(event: GroupJoin):
-		await bot.api.messages.send(peer_id=event.user_id, message="♂Welcome to the club, buddy♂", attachment="photo-185367978_457239102", random_id=0)     #send message on group subscribe
+
 
 @bot.on.chat_message(text = ['echo <text>', 'echo'], lower=True)
 async def echo(ans, text = 'Сообщение не указано'):
@@ -109,6 +137,8 @@ async def echo(ans, text = 'Сообщение не указано'):
           await ans(f"{text}\n{''.join(f'[id{member_id}|.]' for member_id in member_ids)}",attachment=f'photo-185367978_457239114')
      else:
          await ans('Ты не админ')
+
+
 
 
 if __name__ == "__main__":
