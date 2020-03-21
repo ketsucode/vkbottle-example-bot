@@ -1,7 +1,8 @@
-from vkbottle import *
+from vkbottle import Bot, Message
 import asyncio
 from tracemoe import ATraceMoe #for anime search by image https://github.com/Ethosa/tracemoe
 
+bot = Bot("Vk group token")
 
 @bot.on.message_handler(text=["откуда","аниме","что за аниме","какое аниме"],lower=True,command=True)
 async def wrapper(ans: Message):
