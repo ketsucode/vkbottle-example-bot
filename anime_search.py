@@ -1,5 +1,6 @@
 from vkbottle import Bot, Message
 from tracemoe import ATraceMoe
+from datetime import timedelta
 
 bot = Bot("Vk group token")
 
@@ -13,29 +14,22 @@ async def wrapper(ans: Message):
             ans.attachments[0].photo.sizes[-1].url, is_url=True
         )
         titles = res["docs"][0]["title_english"]
-        episodes = res["docs"][0]["episode"]
-        dfrom = round(res["docs"][0]["from"])
-        dto = round(res["docs"][0]["to"])
-        similaritys = round(res["docs"][0]["similarity"] * 100)
-        hoursdf = dfrom // 3600
-        minutesdf = dfrom % 3600 // 60
-        secondsdf = dfrom % 60
-        hoursdt = dto // 3600
-        minutesdt = dto % 3600 // 60
-        secondsdt = dto % 60
+        episode = res["docs"][0]["episode"]
+        rtimef = round(res["docs"][0]["from"])
+        timefrom = datetime.timedelta(seconds=rtimef)
+        rtimet = round(res["docs"][0]["from"])
+        timeto = datetime.timedelta(seconds=rtimet)
+        similarity = round(res["docs"][0]["similarity"] * 100)
+  
         await ans(
             """Аниме:{}
         Серия: {}
-        Таймкод: с {:02d}:{:02d}:{:02d} по {:02d}:{:02d}:{:02d}
+        Таймкод: с {} по {}
         Точность: {}%""".format(
                 titles,
                 episodes,
-                hoursdf,
-                minutesdf,
-                secondsdf,
-                hoursdt,
-                minutesdt,
-                secondsdt,
+                timefrom,
+                timeto,
                 similaritys,
             )
         )
