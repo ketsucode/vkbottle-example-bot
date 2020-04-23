@@ -6,10 +6,10 @@ bot = Bot("VK Group Token")
 
 
 async def check(ans: Message, id):
-    items = (await bot.api.messages.getConversationsById(peer_ids=ans.peer_id))["items"]
+    items = (await bot.api.messages.get_conversations_by_id(peer_ids=ans.peer_id)).items
     if not items:
         return False
-    chat_settings = items[0]["chat_settings"]
+    chat_settings = items[0].chat_settings
     is_admin = id == chat_settings["owner_id"] or id in chat_settings["admin_ids"]
     return is_admin
 
@@ -62,15 +62,15 @@ async def wrapper(ans: Message):
     if ans.reply_message:
         await ans(
             f"""Id чата: {ans.peer_id}
-        Id из ответа: {ans.reply_message.from_id}
-        Id сообщения: {ans.conversation_message_id} или {ans.id}
-        Id пользователя: {ans.from_id}"""
+Id из ответа: {ans.reply_message.from_id}
+Id сообщения: {ans.conversation_message_id} или {ans.id}
+Id пользователя: {ans.from_id}"""
         )
     else:
         await ans(
             f"""Id чата: {ans.peer_id}
-        Id сообщения: {ans.conversation_message_id} или {ans.id}
-        Id отправителя: {ans.from_id}"""
+Id сообщения: {ans.conversation_message_id} или {ans.id}
+Id отправителя: {ans.from_id}"""
         )
 
 
@@ -110,16 +110,16 @@ async def invite(ans: Message):
     await ans("Welcome")
 
 
-@bot.on.chat_message(text=["echo <text>", "echo"], lower=True)
+@bot.on.chat_message(text=["!ping <text>", "echo"], lower=True)
 async def echo(ans, text="Сообщение не указано"):
     if await check(ans, id=ans.from_id):
         member_ids = (
             item["member_id"]
             for item in (
                 await bot.api.request(
-                    "messages.getConversationMembers", {"peer_id": ans.peer_id}
+                    "messages.get_conversation_members", {"peer_id": ans.peer_id}
                 )
-            )["items"]
+            ).items
             if item["member_id"] > 0 and item["member_id"] != id
         )
         await ans(
