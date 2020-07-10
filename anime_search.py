@@ -14,7 +14,7 @@ async def wrapper(ans: Message):
             ans.attachments[0].photo.sizes[-1].url, is_url=True
         )
         titles = res["docs"][0]["title_english"]
-        episode = res["docs"][0]["episode"]
+        episodes = res["docs"][0]["episode"]
         rtimef = round(res["docs"][0]["from"])
         timefrom = datetime.timedelta(seconds=rtimef)
         rtimet = round(res["docs"][0]["from"])
@@ -30,7 +30,7 @@ async def wrapper(ans: Message):
                 episodes,
                 timefrom,
                 timeto,
-                similaritys,
+                similarity,
             )
         )
     else:
